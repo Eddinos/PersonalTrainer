@@ -41,7 +41,7 @@
                 <label for="inputTitle">Title</label>  
              </div>
             <div class=" col-md-6 col-sm-6 col-xs-12 ">
-                <input type="email" class="form-control" id="inputTitle" placeholder="Enter your Training plan title">
+                <input type="text" class="form-control" id="inputTitle" placeholder="Enter your Training plan title">
              </div>
               <div class=" col-md-3 col-sm-4 hidden-xs">
                   <div class=" col-md-4 col-sm-4 hidden-xs">
@@ -82,7 +82,7 @@
               
               <div class="row">
                   <div class=" col-md-1 col-sm-1 col-xs-1 " >
-                       <button type="button" class="btn btn-success">Add an Exercice</button>
+                       <button id="addExercise" type="button" class="btn btn-success">Add an Exercice</button>
                    </div>
                  <div class=" col-md-12 col-sm-12 col-xs-12 " ></div>
               </div>
@@ -92,15 +92,15 @@
                         <label for="titleDescription">Ex. Title</label>  
                     </div>
                     <div class=" col-md-6 col-sm-6 col-xs-12 ">
-                        <input type="email" class="form-control" id="titleDescription" placeholder="Enter your exercice title">
+                        <input type="text" class="form-control" id="titleDescription" placeholder="Enter your exercice title">
                     </div>
                     <div class=" col-md-2 col-sm-4 col-xs-12 ">
-                        <div class="input-group">
-                            <input type="text" class="form-control">
+                        <div id="duration" class="input-group">
+                            <input id="hours" type="text" class="form-control">
                             <span class="input-group-addon" style="padding:0px">:</span>
-                           <input type="text" class="form-control">
+                           <input id="minutes" type="text" class="form-control">
                           <span class="input-group-addon" style="padding:0px">:</span>
-                          <input type="text" class="form-control">
+                          <input id="seconds" type="text" class="form-control">
 
                         </div>
                     </div>
@@ -124,28 +124,7 @@
           
          <div class=" col-md-1 col-sm-0 col-xs-0 " ></div>
         <div class=" col-md-9 col-sm-12 col-xs-12 " >
-                <table class="table table-striped table-condensed">
-                    <tr>
-                        <td>1</td>
-                        <td>Warm Up</td>
-                        <td class="hidden-xs"><p>gentium vicinarum excursus sollicitudo pervigil veterum per oportunos saltus erexit et cautos. haec quoque civitates habet inter oppida quaedam ingentes Bostram et Gerasam atque Philadelphiam murorum firmitate cautissimas.</p></td>
-                        <td> 10 min</td>
-                        <td> <button type="submit" class="btn btn-danger btn-sm"> <span class="glyphicon glyphicon-remove"></span> </button></td>
-                    </tr>
-                      <tr>
-                        <td>1</td>
-                        <td>Warm Up</td>
-                        <td class="hidden-xs"><p>gentium vicinarum excursus sollicitudo pervigil veterum per oportunos saltus erexit et cautos. haec quoque civitates habet inter oppida quaedam ingentes Bostram et Gerasam atque Philadelphiam murorum firmitate cautissimas.</p></td>
-                        <td> 10 min</td>
-                        <td> <button type="submit" class="btn btn-danger btn-sm"> <span class="glyphicon glyphicon-remove"></span> </button></td>
-                    </tr>
-                      <tr>
-                        <td>1</td>
-                        <td>Warm Up</td>
-                        <td class="hidden-xs"><p>gentium vicinarum excursus sollicitudo pervigil veterum per oportunos saltus erexit et cautos. haec quoque civitates habet inter oppida quaedam ingentes Bostram et Gerasam atque Philadelphiam murorum firmitate cautissimas.</p></td>
-                        <td> 10 min</td>
-                        <td> <button type="submit" class="btn btn-danger btn-sm"> <span class="glyphicon glyphicon-remove"></span> </button></td>
-                    </tr>
+                <table id = "exerciseList" class="table table-striped table-condensed">
                     
                 </table>
              </div>
@@ -154,7 +133,7 @@
     <div class=" col-md-10 ol-sm-5 col-xs-0 " ></div>
     <div class=" col-md-2 ol-sm-5 col-xs-12 text-center" >
         <button type="submit" class="btn btn-danger btn-sm"> <span class="glyphicon glyphicon-remove"></span> </button>
-        <button type="submit" class="btn btn-success btn-lg"> <span class="glyphicon glyphicon-ok"></span> </button>
+        <button id="sendExercise" class="btn btn-success btn-lg"> <span class="glyphicon glyphicon-ok"></span> </button>
     </div>
 
  
@@ -179,7 +158,71 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="lib/select2-3.5.1/select2.min.js"></script>
     <script>
-        $(document).ready(function() { $("#e1").select2(); });
+        $(document).ready(function() { 
+            $("#e1").select2();
+         });
+
+		exerciceList = [];
+		
+		totalTimeValue = [0,0,0];
+        
+        $("#addExercise").click(function(){
+			tableEx = document.getElementById("exerciseList");
+			lastRowNb = tableEx.rows.length;
+			rowToAdd = tableEx.insertRow(lastRowNb);
+			exerciseStr = "";
+
+			hours = parseInt($("#hours").val()) || 0;
+			minutes = parseInt($("#minutes").val()) || 0;
+			seconds = parseInt($("#seconds").val()) || 0;
+			ret0 = 0; ret1 = 0;
+			ret1 = Math.floor((totalTimeValue[2]+ seconds)/60);
+			totalTimeValue[2] = (totalTimeValue[2]+ seconds)%60;
+			ret0 = Math.floor((totalTimeValue[2]+ minutes + ret1)/60);
+			totalTimeValue[1] = (totalTimeValue[1]+ minutes + ret1)%60;
+			totalTimeValue[0] = totalTimeValue[0]+ hours + ret0;
+
+			$("#totalTimeValue").html("<span class=\"glyphicon glyphicon-time\"></span>"+totalTimeValue[0]+":"+totalTimeValue[1]+":"+totalTimeValue[2]);
+		
+			cell0 = rowToAdd.insertCell(0);
+			cell1 = rowToAdd.insertCell(1);
+			cell2 = rowToAdd.insertCell(2);
+			cell3 = rowToAdd.insertCell(3);
+			cell4 = rowToAdd.insertCell(4);
+			cell0.innerHTML = lastRowNb+1;
+			cell1.innerHTML = $("#titleDescription").val();
+			exerciseStr += "'title':'"+$("#titleDescription").val()+"',";
+			cell2.innerHTML = $("#exerciceDescription").val();
+			exerciseStr += "'description':'"+$("#exerciceDescription").val()+"',";
+			cell3.innerHTML = (hours==0?"":(hours+"h "))+(minutes==0?"":(minutes+"min "))+(seconds==0?"":(seconds+"s"));
+			exerciseStr += "'duration':'"+(hours==0?"":(hours+"h "))+(minutes==0?"":(minutes+"min "))+(seconds==0?"":(seconds+"s"))+"'";
+			cell4.innerHTML = "<button type=\"submit\" class=\"btn btn-danger btn-sm\" onclick=\"deleteRow(this);\"> <span class=\"glyphicon glyphicon-remove\"></span> </button>";
+
+			exerciceList.push(exerciseStr);
+		});
+
+        deleteRow = function(btn){
+        	tableEx = document.getElementById("exerciseList");
+			td = btn.parentNode;
+            tr = td.parentNode;
+            rowIndex = tr.rowIndex
+        	//alert("Row index is: " + tr.rowIndex);
+        	tableEx.deleteRow(rowIndex);
+        	return false;
+        };
+
+        $("#sendExercise").click(function(){
+			trainingPlan = {
+				'title':$("#inputTitle").val(),
+				'description':$("#inputDescription").val(),
+				'domain':$("#e1").val(),
+				'exerciceList':'{'+exerciceList.join("},{")+'}',
+				'duration':totalTimeValue[0]+':'+totalTimeValue[1]+':'+totalTimeValue[2]
+			}
+			alert(JSON.stringify(trainingPlan));
+			
+    	$.post("/task", "trainingPlan="+JSON.stringify(trainingPlan));  
+        });
     </script>
              
   </body>
